@@ -4,10 +4,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace MoUnity {
-    public class DebugAttack : MonoBehaviour
+    public class DebugAttack : MonoBehaviour, IAttackAction
     {
 
         public static readonly float TIMEATTACKINDICATOR_SHOWN = 0.3f;
+
+        public float attackForce;
 
         public Vector2 targetVector;
         private DefaultControls input;
@@ -63,6 +65,16 @@ namespace MoUnity {
         {
             yield return new WaitForSeconds(timeAttackIndicatorShown);
             attackIndicator.SetActive(false);
+        }
+
+        public Vector2 GetAttackVector()
+        {
+            return targetVector;
+        }
+
+        public float GetForce()
+        {
+            return attackForce;
         }
     }
 }

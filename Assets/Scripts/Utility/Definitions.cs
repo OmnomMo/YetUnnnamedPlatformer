@@ -8,5 +8,6 @@ namespace MoUnity
     {
         public static readonly int ENVIRONMENT_LAYER = 9;
         public static readonly int ENVIRONMENT_FLOOR_LAYER = 10;
+        public static readonly int ENVIRONMENT_ATTACKTARGET_LAYER = 11;
     }
 }

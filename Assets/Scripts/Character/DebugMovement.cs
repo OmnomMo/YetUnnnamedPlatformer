@@ -6,7 +6,7 @@ using UnityEngine.InputSystem.PlayerInput;
 
 namespace MoUnity
 {
-    public class DebugMovement : MonoBehaviour
+    public class DebugMovement : MonoBehaviour, IExternalForceReceiver
     {
         [Header("Movement Stats")]
         public int acceleration;
@@ -177,7 +177,9 @@ namespace MoUnity
             transform.position = new Vector3(translationVector.x, transform.position.y, translationVector.z);
         }
 
-     
-
+        public void ApplyForce(Vector3 force)
+        {
+            GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower, 0));
+        }
     }
 }
