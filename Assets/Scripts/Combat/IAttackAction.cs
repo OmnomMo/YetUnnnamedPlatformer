@@ -6,7 +6,7 @@ namespace MoUnity
 {
     public interface IAttackAction
     {
-        Vector2 GetAttackVector();
+        Vector3 GetAttackVector();
         float GetForce();
     }
 }

@@ -7,5 +7,6 @@ namespace MoUnity
     public interface IExternalForceReceiver
     {
         void ApplyForce(Vector3 force);
+        void ResetVelocity();
     }
 }

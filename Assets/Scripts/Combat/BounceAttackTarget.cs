@@ -9,7 +9,10 @@ namespace MoUnity
     {
         public override void OnHit(IAttackAction attacker, IExternalForceReceiver attackerForceReceiver)
         {
-            Debug.LogError(attacker.GetAttackVector().ToString());
+            DebugHelperDrawer.Instance.SpawnVectorHelperPrefab(attacker.GetForce() /1000 * attacker.GetAttackVector() * -1, PlayerController.Instance.playerObject.transform.position);
+
+            attackerForceReceiver.ResetVelocity();
+            
             attackerForceReceiver.ApplyForce(attacker.GetForce() * attacker.GetAttackVector() * -1);
         }
     }

@@ -10,19 +10,28 @@ namespace MoUnity
     {
         [Header("Movement Stats")]
         public int acceleration;
-        public int speed;
+        public int walkingSpeed;
+        public int flyingSpeed;
         public int jumpPower;
         [Range(0,1)]
         public float airControl;
 
 
-
+        [Header("GameObjects")]
+        public Transform leftDirectionTransform;
+        public Transform righDirectionTransform;
 
 
         [Header("Debug Output")]
         public Transform motionVectorDebugObject;
         public bool isGrounded;
         public Vector3 velocity;
+
+        public bool acceleratingLeft;
+        public bool acceleratingRight;
+
+        public float leftAngle;
+        public float rightAngle;
 
 
         //Private variables
@@ -57,11 +66,7 @@ namespace MoUnity
             //input.Player.Move.performed -= ExecuteMove;
 
         }
-
-        void FixedUpdate()
-        {
-           
-        }
+        
 
         private void LateUpdate()
         {
@@ -88,6 +93,8 @@ namespace MoUnity
 
                 }
             }
+
+           
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -108,12 +115,14 @@ namespace MoUnity
 
         public void ClampSpeed()
         {
-            float speedFactor = speed / GetPlayerHorizontalSpeed();
+            float speedFactor = flyingSpeed / GetComponent<Rigidbody>().velocity.magnitude;
             if (speedFactor < 1)
             {
                 Vector3 flatVelocity = VectorUtilities.GetFlatVector3(GetComponent<Rigidbody>().velocity);
                 GetComponent<Rigidbody>().velocity = new Vector3(flatVelocity.x * speedFactor, GetComponent<Rigidbody>().velocity.y, flatVelocity.z * speedFactor);
             }
+
+
         }
 
         public float GetPlayerHorizontalSpeed()
@@ -153,8 +162,20 @@ namespace MoUnity
 
         private void ExecuteMove(float xMove)
         {
-            float moveForce = xMove * Time.deltaTime * acceleration;
-            GetComponent<Rigidbody>().AddForce(moveForce * VectorUtilities.PositionToTangentVector(transform.position, EnvironmentController.Instance.levelCenter.position));
+            Vector3 rightWalkingDirection = righDirectionTransform.position - transform.position;
+            rightAngle = Vector3.Angle(GetComponent<Rigidbody>().velocity, rightWalkingDirection);
+            acceleratingRight =  rightAngle < 90 && xMove > 0.1f;
+            
+            Vector3 leftWalkingDirection = leftDirectionTransform.position - transform.position;
+            leftAngle = Vector3.Angle(GetComponent<Rigidbody>().velocity, leftWalkingDirection);
+            acceleratingLeft = leftAngle < 90 && xMove < -0.1f;
+            bool accelerating = acceleratingLeft || acceleratingRight;
+
+            if (!accelerating || GetPlayerHorizontalSpeed() < walkingSpeed)
+            {
+                float moveForce = xMove * Time.deltaTime * acceleration;
+                GetComponent<Rigidbody>().AddForce(moveForce * VectorUtilities.PositionToTangentVector(transform.position, EnvironmentController.Instance.levelCenter.position));
+            }
         }
 
         private void ExecuteJump(InputAction.CallbackContext context)
@@ -179,7 +200,12 @@ namespace MoUnity
 
         public void ApplyForce(Vector3 force)
         {
-            GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower, 0));
+            GetComponent<Rigidbody>().AddForce(force);
+        }
+
+        public void ResetVelocity()
+        {
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
         }
     }
 }

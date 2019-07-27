@@ -67,9 +67,9 @@ namespace MoUnity {
             attackIndicator.SetActive(false);
         }
 
-        public Vector2 GetAttackVector()
+        public Vector3 GetAttackVector()
         {
-            return targetVector;
+            return Vector3.Normalize(attackIndicator.transform.position - PlayerController.Instance.playerObject.transform.position);
         }
 
         public float GetForce()
